@@ -25,7 +25,7 @@ bool comparecolor(const unsigned char * data, int index1D, unsigned char r, unsi
 
 int main(int argc, char **argv){
 	
-	string inputPath = "einsteinSample.bmp";
+	string inputPath = "ei.bmp";//"einsteinSample.bmp";
 	    
 	int iw, ih, n;
 
@@ -37,6 +37,8 @@ int main(int argc, char **argv){
 	int oh = ih;
 	unsigned char *odata = (unsigned char *) malloc(ow * oh * n);
 
+	int unknown = 0;
+
 	for(int j=0; j<ih; j++) {
 		for(int i=0; i<iw; i++) {
 			int index = i*3+0+j*iw*3;
@@ -46,6 +48,7 @@ int main(int argc, char **argv){
 				odata[i*3+1+j*iw*3] = 255;//G
 				odata[i*3+2+j*iw*3] = 0;//B
 				// 255,0,0
+				unknown++;
 			} else {
 				odata[i*3+0+j*iw*3] = idata[i*3+0+j*iw*3];
 				odata[i*3+1+j*iw*3] = idata[i*3+1+j*iw*3];
@@ -54,6 +57,7 @@ int main(int argc, char **argv){
 
 		}
 	}
+	cout << "unknown pixel: " << unknown << endl;	
 
 	string outputPath = "out.bmp";
 
