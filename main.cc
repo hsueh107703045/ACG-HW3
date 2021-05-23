@@ -6,8 +6,11 @@
 
 #include <string>
 #include <iostream>
+#include "Eigen/Dense"
 
 using namespace std;
+using namespace Eigen;
+
 
 int xyn2oneD(int x, int y, int n, int iw) {
 	    return x*3+n+(y*iw*3);
@@ -25,7 +28,7 @@ bool comparecolor(const unsigned char * data, int index1D, unsigned char r, unsi
 
 int main(int argc, char **argv){
 	
-	string inputPath = "ei.bmp";//"einsteinSample.bmp";
+	string inputPath = "einstein100.jpg";//"einsteinSample.bmp";
 	    
 	int iw, ih, n;
 
@@ -37,6 +40,7 @@ int main(int argc, char **argv){
 	int oh = ih;
 	unsigned char *odata = (unsigned char *) malloc(ow * oh * n);
 
+	/*
 	int unknown = 0;
 
 	for(int j=0; j<ih; j++) {
@@ -58,8 +62,24 @@ int main(int argc, char **argv){
 		}
 	}
 	cout << "unknown pixel: " << unknown << endl;	
+*/
 
-	string outputPath = "out.bmp";
+	//missing area: 20*20, start point: (20,20)
+
+	
+MatrixXd m(2,2);
+m(0,0) = 3;
+m(1,0) = 2.5;
+m(0,1) = -1;
+m(1,1) = m(1,0) + m(0,1);
+std::cout << m << std::endl;
+
+
+
+
+
+	//output
+	string outputPath = "out.jpg";
 
 	// write
 	stbi_write_png(outputPath.c_str(), ow, oh, n, odata, 0);
