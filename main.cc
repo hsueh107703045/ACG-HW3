@@ -63,17 +63,118 @@ int main(int argc, char **argv){
 	}
 	cout << "unknown pixel: " << unknown << endl;	
 */
-
-	//missing area: 20*20, start point: (20,20)
-
 	
-MatrixXd m(2,2);
-m(0,0) = 3;
-m(1,0) = 2.5;
-m(0,1) = -1;
-m(1,1) = m(1,0) + m(0,1);
-std::cout << m << std::endl;
+	int startPx = 15;
+	int startPy = 35;
 
+	int sizeA = 5;
+
+
+
+	// unknown area matX
+	Matrix <double, 25, 1> matX;
+	matX.setZero();
+	
+	int counter = 0;
+	for(int j = startPy ; j < startPy+5 ; j++) {
+		for(int i = startPx ; i < startPx+5 ; i++) {
+			
+			matX(counter) = idata[i*3+0+j*iw*3];
+			counter++;	
+//			cout << i << "," << j << endl;
+
+		}
+	}	
+
+	cout << "\n" << "matX: " << "\n" << matX << endl;
+
+
+
+	// 5*5 X 5*5
+	Matrix <double, 25, 25> matA;
+	matA.setZero();
+
+	Matrix <double, 25, 1> matB;
+	matB.setZero();
+
+
+	for(int index = 0 ; index < 25 ; index++){
+		// self
+		matA(index,index) = -4;
+		
+		// look up
+		if(index > 4){
+			matA(index,index-5) = 1;
+		}
+		else{	// upper pixel is known
+			matB(index) -= idata[xyn2oneD((index%5)+startPx,(index/5)+startPy-1,0,iw)];
+			cout << index << "known: " << (index%5)+startPx << ", " << (index/5)+startPy-1 << endl;
+		}
+
+		// look down
+		if(index < 20){
+			matA(index,index+5) = 1;
+		}
+		else{
+			matB(index) -= idata[xyn2oneD((index%5)+startPx,(index/5)+startPy+1,0,iw)];
+			cout << index << "known2: " << (index%5)+startPx << ", " << (index/5)+startPy+1 << endl;
+		}
+
+		// look right
+		if((index%5) != 4){
+			matA(index,index+1) = 1;
+		}
+		else{
+			matB(index) -= idata[xyn2oneD((index%5)+startPx+1,(index/5)+startPy,0,iw)];
+
+		}
+
+		// look left
+		if((index%5) != 0){
+			matA(index,index-1) = 1;
+		}
+		else{
+			matB(index) -= idata[xyn2oneD((index%5)+startPx-1,(index/5)+startPy,0,iw)];
+
+		}
+
+
+	}
+
+	cout << "\n" << "matA: " << "\n" << matA << endl;
+	cout << "\n" << "matB: " << "\n" << matB << endl;
+
+
+// solving matrix matX
+	Matrix <double, 25, 25> matAinv;
+	matAinv = matA.inverse();
+	cout << "inverse of A: " << matAinv <<endl;
+
+
+	matX = matAinv * matB;
+
+	cout << "\n" << "matX: " << "\n" << matX << endl;
+
+
+
+	odata = idata;
+
+
+// put matX back to image	
+	counter = 0;
+	for(int j = startPy ; j < startPy+5 ; j++) {
+		for(int i = startPx ; i < startPx+5 ; i++) {
+			
+			odata[i*3+0+j*iw*3] = matX(counter);
+			odata[i*3+1+j*iw*3] = matX(counter);
+			odata[i*3+2+j*iw*3] = matX(counter);
+
+			//matX(counter) = idata[i*3+0+j*iw*3];
+			counter++;	
+			//cout << i << "," << j << endl;
+
+		}
+	}	
 
 
 
